@@ -80,6 +80,11 @@ sub load_image_tests_docker {
     }
 }
 
+sub load_slem_rancher_image_tests {
+    loadtest 'boot/boot_to_desktop';
+    loadtest 'containers/slem_rancher';
+}
+
 sub load_host_tests_podman {
     my ($run_args) = @_;
     # podman package is only available as of 15-SP1
@@ -189,7 +194,7 @@ sub load_container_tests {
     }
 
     if (get_var('CONTAINER_SLEM_RANCHER')) {
-        loadtest 'containers/slem_rancher';
+        load_slem_rancher_image_tests();
         return;
     }
 

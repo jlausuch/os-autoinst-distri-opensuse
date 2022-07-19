@@ -72,7 +72,7 @@ if (is_updates_test_repo && !get_var('MAINT_TEST_REPO')) {
 return 1 if load_yaml_schedule;
 
 if (is_container_test) {
-    load_boot_from_disk_tests();
+    load_boot_from_disk_tests() unless get_var('CONTAINER_SLEM_RANCHER');
     load_container_tests();
 }
 
