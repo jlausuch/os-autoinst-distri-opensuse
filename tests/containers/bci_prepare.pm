@@ -20,7 +20,7 @@
 
 use Mojo::Base qw(consoletest);
 use XML::LibXML;
-use utils qw(zypper_call script_retry);
+use utils qw(zypper_call script_retry systemctl);
 use version_utils qw(get_os_release);
 use db_utils qw(push_image_data_to_db);
 use containers::common;
@@ -99,6 +99,7 @@ sub run {
 
     # For BCI tests using podman, buildah package is also needed
     install_buildah_when_needed($host_distri) if ($engine eq 'podman');
+    systemctl("restart firewalld");
 
     record_info('Clone', "Clone BCI tests repository: $bci_tests_repo");
     my $branch = $bci_tests_branch ? "-b $bci_tests_branch" : '';

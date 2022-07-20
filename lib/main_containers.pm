@@ -165,6 +165,7 @@ sub update_host_and_publish_hdd {
         loadtest 'containers/update_host';
     }
     loadtest 'shutdown/shutdown';
+    loadtest 'shutdown/svirt_upload_assets' if (is_svirt);
 }
 
 sub load_container_tests {
