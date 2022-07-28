@@ -60,6 +60,7 @@ sub check_package {
 
 sub run {
     select_console 'root-console';
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
 
     script_run "rebootmgrctl set-strategy off";
 

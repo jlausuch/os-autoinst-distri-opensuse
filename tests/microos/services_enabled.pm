@@ -34,6 +34,7 @@ sub map_services {
 }
 
 sub run {
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
     my %services;
 
     # the SERVICES_ENABLED var allows to overwrite the test's built

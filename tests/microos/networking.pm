@@ -12,6 +12,7 @@ use warnings;
 use testapi;
 
 sub run {
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
     # check the network configuration
     script_run "ip addr show";
     script_run "cat /etc/resolv.conf";
@@ -31,4 +32,3 @@ sub test_flags {
 }
 
 1;
-

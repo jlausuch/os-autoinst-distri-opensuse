@@ -29,6 +29,7 @@ sub run {
 
 
     $self->select_serial_terminal;
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
     die 'SUSEConnect package is not pre-installed!' if script_run 'command -v SUSEConnect';
     if ((is_jeos || is_sle_micro) && script_run(q(SUSEConnect --status-text | grep -i 'not registered'))) {
         die 'System has been already registered!';

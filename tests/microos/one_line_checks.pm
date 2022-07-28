@@ -39,6 +39,7 @@ sub run_microos_checks {
 }
 
 sub run {
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
     run_rcshell_checks;
     return if get_var('EXTRA', '') =~ /RCSHELL/;
 

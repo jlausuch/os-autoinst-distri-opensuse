@@ -14,6 +14,7 @@ use version_utils qw(is_microos is_sle_micro);
 
 sub run {
     select_console 'root-console';
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
 
     # Disk which /var resides on
     my $disk = script_output 'lsblk -rnoPKNAME $(findmnt -nrvoSOURCE /var)';

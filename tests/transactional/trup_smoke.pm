@@ -27,6 +27,7 @@ sub run {
     my ($self) = @_;
 
     select_console 'root-console';
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
 
     if (is_sle_micro && is_s390x) {
         record_soft_failure "bsc#1191863 -  [s390x] Can't reboot after transactional-update bootloader";

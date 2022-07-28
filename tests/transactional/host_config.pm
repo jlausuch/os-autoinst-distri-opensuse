@@ -20,6 +20,8 @@ use utils qw(zypper_call);
 
 sub run {
     select_console 'root-console';
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
+    record_info('KVM', script_output('ls -h /dev/', proceed_on_failure => 1));
 
     # GRUB Configuration
     my $keep_grub_timeout = get_var('KEEP_GRUB_TIMEOUT');

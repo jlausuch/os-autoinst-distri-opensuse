@@ -15,6 +15,7 @@ use testapi;
 
 sub run {
     select_console 'root-console';
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
 
     die 'Should have failed' unless script_run('touch /should_fail');
     assert_script_run "touch /etc/should_succeed";

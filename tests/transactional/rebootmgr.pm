@@ -102,6 +102,7 @@ sub check_strategy_etcd_lock {
 }
 
 sub run {
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
     enter_cmd "tput civis";
 
     record_info 'Instantly', 'Test instant reboot';

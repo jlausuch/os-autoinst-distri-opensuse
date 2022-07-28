@@ -17,6 +17,7 @@ sub run {
     my ($self) = @_;
 
     select_console 'root-console';
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
 
     # Install cockpit if needed, this is needed for DVD flavor where
     # Cockpit pattern is not selected during install

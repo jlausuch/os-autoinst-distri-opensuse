@@ -39,6 +39,7 @@ sub compare_id {
 
 sub run {
     select_console 'root-console';
+    record_info('KVM', script_output('ls -h /dev/kvm', proceed_on_failure => 1));
 
     if (script_run 'rpm -q health-checker') {
         trup_install 'health-checker';
