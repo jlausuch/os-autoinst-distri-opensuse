@@ -68,9 +68,6 @@ sub run {
     } elsif (is_sle("<15-SP4")) {
         add_suseconnect_product('PackageHub', undef, undef, undef, 300, 1);
         $pkg = 'docker-distribution-registry';
-    } elsif (is_leap(">=15.4")) {
-        my $version = script_output("grep VERSION= /etc/os-release | cut -d'=' -f2 | cut -d' ' -f1 | sed 's/\"//g'");
-        zypper_call("ar http://download.opensuse.org/update/leap/$version/sle/SUSE:Updates:openSUSE-SLE:$version.repo");
     } elsif (is_leap("<15.4")) {
         $pkg = 'docker-distribution-registry';
     }
