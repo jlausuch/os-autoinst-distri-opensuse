@@ -192,7 +192,8 @@ sub trup_call {
 
     # Always wait for rollback.service to be finished before triggering manually transactional-update
     ensure_rollback_service_not_running();
-
+    script_run "btrfs device scan";
+    script_run "btrfs device scan --all-devices";
     my $script = "transactional-update $cmd > /dev/$serialdev";
     # Only print trup-0- if it's reliably read later (see below)
     $script .= "; echo trup-\$?- | tee -a /dev/$serialdev" unless $cmd =~ /reboot / && $args{exit_code} == 0;
