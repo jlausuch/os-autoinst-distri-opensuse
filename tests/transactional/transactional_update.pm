@@ -114,6 +114,8 @@ sub run {
     check_package(stage => 'in', package => 'update-test-optional');
 
     record_info 'Rollback', 'Revert to snapshot with initial rpm';
+    script_run "btrfs device scan";
+    script_run "btrfs device scan --all-devices";
     trup_call "rollback $snap";
     check_reboot_changes;
     check_package(stage => 'in');
