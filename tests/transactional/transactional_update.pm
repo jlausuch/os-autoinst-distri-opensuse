@@ -60,7 +60,7 @@ sub check_package {
 
 sub run {
     select_console 'root-console';
-
+    script_run('cat /sys/module/printk/parameters/ignore_loglevel');
     script_run "rebootmgrctl set-strategy off";
 
     get_utt_packages;
