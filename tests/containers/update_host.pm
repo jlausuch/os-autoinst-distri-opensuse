@@ -39,6 +39,13 @@ sub run {
         assert_script_run("dhclient -v");
         script_retry("yum update -y --nobest", timeout => $update_timeout);
     } elsif ($host_distri eq 'rhel') {
+        script_run("ls -lh /etc/yum.repos.d");
+        script_run("sed -i 's/-ext//' /etc/yum.repos.d/res7.repo");
+        script_run("sed -i 's/-ext//' /etc/yum.repos.d/res8.repo");
+        script_run("sed -i 's/-ext//' /etc/yum.repos.d/res-as8.repo");
+        script_run("cat /etc/yum.repos.d/res7.repo");
+        script_run("cat /etc/yum.repos.d/res8.repo");
+        script_run("cat /etc/yum.repos.d/res-as8.repo");
         script_retry("yum update -y", timeout => $update_timeout);
         $self->disable_selinux();
     } else {
