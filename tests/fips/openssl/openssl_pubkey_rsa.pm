@@ -19,6 +19,7 @@
 use base "consoletest";
 use testapi;
 use serial_terminal 'select_serial_terminal';
+use transactional qw(trup_call process_reboot);
 use strict;
 use warnings;
 
