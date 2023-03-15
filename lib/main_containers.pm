@@ -199,6 +199,18 @@ sub load_container_tests {
         loadtest 'boot/boot_to_desktop' unless is_public_cloud;
     }
 
+    if (get_var('BCI_FIPS_CERTIFICATION')) {
+        loadtest 'containers/host_configuration';
+        loadtest 'containers/fips/prepare_env';
+        loadtest 'containers/fips/openjdk';
+        loadtest 'containers/fips/libica' if is_s390x;
+        loadtest 'containers/fips/nss';
+        loadtest 'containers/fips/libgcrypt';
+        loadtest 'containers/fips/gnutls';
+        loadtest 'containers/fips/openssl';
+        return;
+    }
+
     if (is_container_image_test() && !(is_jeos || is_sle_micro || is_microos || is_leap_micro) && $runtime ne "k8s") {
         # Container Image tests common
         loadtest 'containers/host_configuration';
