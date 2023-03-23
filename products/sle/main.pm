@@ -653,11 +653,9 @@ if (load_yaml_schedule) {
 return load_wicked_create_hdd if (get_var('WICKED_CREATE_HDD'));
 
 if (is_jeos) {
-    if (is_openstack) {
-        load_jeos_openstack_tests();
-        return 1;
-    }
-    load_jeos_tests();
+    # JeOS has its own main schedule file
+    main_jeos::load_jeos_tests();
+    return 1;
 }
 
 # load the tests in the right order

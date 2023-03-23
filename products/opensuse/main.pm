@@ -259,7 +259,9 @@ sub load_default_tests {
 
 # load the tests in the right order
 if (is_jeos) {
-    load_jeos_tests();
+    # JeOS has its own main schedule file
+    main_jeos::load_jeos_tests();
+    return 1;
 }
 
 if (is_kernel_test()) {
