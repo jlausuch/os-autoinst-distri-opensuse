@@ -654,21 +654,8 @@ if (load_yaml_schedule) {
 return load_wicked_create_hdd if (get_var('WICKED_CREATE_HDD'));
 
 if (is_jeos) {
-<<<<<<< HEAD
-<<<<<<< HEAD
     load_jeos_tests();
 } elsif (is_kernel_test()) {
-=======
-=======
->>>>>>> 33f0d2428... Create common file for JeOS test schedule
-    # JeOS has its own main schedule file
-    main_jeos::load_jeos_tests();
-    return 1;
-}
-
-# load the tests in the right order
-if (is_kernel_test()) {
->>>>>>> 33f0d2428... Create common file for JeOS test schedule
     load_kernel_tests();
 }
 elsif (is_systemd_test()) {
