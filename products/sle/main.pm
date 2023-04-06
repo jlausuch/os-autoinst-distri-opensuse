@@ -656,6 +656,7 @@ return load_wicked_create_hdd if (get_var('WICKED_CREATE_HDD'));
 if (is_jeos) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     load_jeos_tests();
 } elsif (is_kernel_test()) {
 =======
@@ -669,6 +670,10 @@ if (is_jeos) {
 # load the tests in the right order
 if (is_kernel_test()) {
 >>>>>>> 33f0d2428... Create common file for JeOS test schedule
+=======
+    load_jeos_tests();
+} elsif (is_kernel_test()) {
+>>>>>>> d14c7085ad3cc0f3a03d4b0bb78b2c9c358ed9c2
     load_kernel_tests();
 }
 elsif (is_systemd_test()) {

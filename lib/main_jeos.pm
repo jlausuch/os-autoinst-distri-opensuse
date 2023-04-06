@@ -62,6 +62,10 @@ sub load_journal_check_tests {
 load_jeos_main_tests {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d14c7085ad3cc0f3a03d4b0bb78b2c9c358ed9c2
     loadtest 'console/textinfo';
     loadtest 'console/hostname';r
     loadtest 'console/ping';
@@ -82,6 +86,11 @@ load_jeos_main_tests {
 =======
 =======
 >>>>>>> 33f0d2428... Create common file for JeOS test schedule
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 33f0d2428b9f6abec962cd9b524545785dc5287b
+>>>>>>> d14c7085ad3cc0f3a03d4b0bb78b2c9c358ed9c2
     loadtest '';
     loadtest '';
     loadtest '';
@@ -99,9 +108,18 @@ load_jeos_main_tests {
     loadtest '';
     loadtest '';
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 33f0d2428... Create common file for JeOS test schedule
 =======
 >>>>>>> 33f0d2428... Create common file for JeOS test schedule
+=======
+<<<<<<< HEAD
+>>>>>>> 33f0d2428... Create common file for JeOS test schedule
+=======
+>>>>>>> 33f0d2428... Create common file for JeOS test schedule
+=======
+>>>>>>> 33f0d2428b9f6abec962cd9b524545785dc5287b
+>>>>>>> d14c7085ad3cc0f3a03d4b0bb78b2c9c358ed9c2
     loadtest '';
     loadtest '';
     loadtest '';
