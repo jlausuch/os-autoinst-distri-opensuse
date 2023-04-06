@@ -21,6 +21,7 @@ use scheduler 'load_yaml_schedule';
 use Utils::Backends qw(is_hyperv is_hyperv_in_gui is_pvm is_ipmi);
 use main_containers;
 use main_publiccloud;
+use main_jeos 'load_jeos_tests';
 use Utils::Architectures;
 use DistributionProvider;
 
@@ -653,15 +654,21 @@ if (load_yaml_schedule) {
 return load_wicked_create_hdd if (get_var('WICKED_CREATE_HDD'));
 
 if (is_jeos) {
-    if (is_openstack) {
-        load_jeos_openstack_tests();
-        return 1;
-    }
+<<<<<<< HEAD
+<<<<<<< HEAD
     load_jeos_tests();
+} elsif (is_kernel_test()) {
+=======
+=======
+>>>>>>> 33f0d2428... Create common file for JeOS test schedule
+    # JeOS has its own main schedule file
+    main_jeos::load_jeos_tests();
+    return 1;
 }
 
 # load the tests in the right order
 if (is_kernel_test()) {
+>>>>>>> 33f0d2428... Create common file for JeOS test schedule
     load_kernel_tests();
 }
 elsif (is_systemd_test()) {
