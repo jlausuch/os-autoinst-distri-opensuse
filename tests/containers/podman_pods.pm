@@ -83,6 +83,8 @@ sub run {
         assert_script_run('podman kube apply --kubeconfig ~/.kube/config -f pod.yaml');
         assert_script_run('kubectl wait --for=condition=Ready pod/testing-pod');
         validate_script_output('kubectl exec testing-pod -- cat /etc/os-release', sub { m/SUSE Linux Enterprise Server/ });
+        assert_script_run('kubectl delete pods --all');
+        #assert_script_run('podman pod rm -f testing-pod');
     }
 
     $podman->cleanup_system_host();
