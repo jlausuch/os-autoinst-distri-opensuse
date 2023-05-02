@@ -18,6 +18,7 @@ use containers::common;
 
 sub run {
     select_serial_terminal;
+    sleep;
     my $interface;
     my $update_timeout = 2400;    # aarch64 takes sometimes 20-30 minutes for completion
     my ($version, $sp, $host_distri) = get_os_release;
