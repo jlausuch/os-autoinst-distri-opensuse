@@ -34,6 +34,7 @@ use containers::container_images;
 
 sub run {
     my ($self, $args) = @_;
+    sleep;
     die('You must define a engine') unless ($args->{runtime});
     $self->{runtime} = $args->{runtime};
     select_serial_terminal;
@@ -72,4 +73,3 @@ sub post_fail_hook {
 }
 
 1;
-
