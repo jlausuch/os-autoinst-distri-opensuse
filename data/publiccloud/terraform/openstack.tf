@@ -85,11 +85,13 @@ resource "openstack_compute_instance_v2" "openqa_instance" {
     network {
         name = "fixed"
     }
+    tags            = ["openqa"]
 }
 
 resource "openstack_networking_floatingip_v2" "floating_ip" {
     count = var.instance_count
     pool  = "floating"
+    tags  = ["openqa"]
 }
 
 resource "openstack_compute_floatingip_associate_v2" "floating_ip" {
