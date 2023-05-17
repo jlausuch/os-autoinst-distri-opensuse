@@ -55,6 +55,7 @@ sub run {
     assert_script_run("crc config set consent-telemetry no");
     assert_script_run("crc setup 2>&1 | tee /tmp/crc_setup.log", timeout => 1800);
     assert_script_run("crc start -c 8 -m 16000 -p /home/$user/.config/ps.json 2>&1 | tee /tmp/crc_start.log", timeout => 1800);
+    sleep;
 
     # Check that the deployment works
     assert_script_run('eval $(crc oc-env)');
