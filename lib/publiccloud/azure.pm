@@ -207,6 +207,7 @@ sub upload_img {
         # Print image definitions as a help to debug possible conflicting definitions
         my $images = script_output("az sig image-definition list -g '$resource_group' -r '$gallery'");
         record_info("img-def", "Existing image definitions:\n$images");
+        sleep;
 
         # Note: Repetitive calls are do not fail
         assert_script_run("az sig image-definition create --resource-group '$resource_group' --gallery-name '$gallery' " .
