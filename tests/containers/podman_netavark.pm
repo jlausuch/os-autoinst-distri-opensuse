@@ -86,6 +86,8 @@ sub run {
     assert_script_run("podman network create --gateway $net1->{gateway} --subnet $net1->{subnet} $net1->{name}");
     assert_script_run("podman run --network $net1->{name}:ip=$ctr1->{ip},mac=$ctr1->{mac} -d --name $ctr1->{name} $ctr1->{image}");
     assert_script_run("podman container inspect $ctr1->{name} --format {{.NetworkSettings.Networks.$net1->{name}.IPAddress}}");
+    assert_script_run("podman ps --all");
+    sleep;
     validate_script_output("curl --head --silent $ctr1->{ip}:80", sub { /HTTP.* 200 OK/ });
     assert_script_run("grep $ctr1->{name} /run/containers/networks/aardvark-dns/$net1->{name}");
     remove_subtest_setup;
