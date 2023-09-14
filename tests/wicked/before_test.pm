@@ -132,6 +132,7 @@ sub run {
             for my $pkg ('wicked', 'wicked-service') {
                 die("Missing installation of package $pkg!") unless grep { $_ eq $pkg } @installed_packages;
             }
+            sleep;
             for my $pkg (qw(wicked-debuginfo wicked-debugsource)) {
                 if (script_run("zypper search --repo $repo_id $pkg") == 0) {
                     zypper_call("in --force -y --from $repo_id --force-resolution $pkg");
