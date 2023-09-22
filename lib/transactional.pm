@@ -48,11 +48,7 @@ sub get_utt_packages {
         assert_script_run 'curl -o utt.repo ' . data_url("microos/utt-leap.repo");
     }
 
-    # Different testfiles for SUSE MicroOS and openSUSE MicroOS
-    my $tarball = 'utt-';
-    $tarball .= is_opensuse() ? 'opensuse' : 'sle';
-    $tarball .= '-' . get_required_var('ARCH') . '.tgz';
-
+    my $tarball = 'utt-sle-' . get_required_var('ARCH') . '.tgz';
     assert_script_run 'curl -O ' . data_url("microos/$tarball");
     assert_script_run "tar xzvf $tarball";
 }
@@ -187,8 +183,9 @@ sub rpmver {
     my $vr = "$rpm{$iobs}{v}-$rpm{$iobs}{r}";
     # Returns expected package version after installation
     return $vr if $q eq 'vr';
-    # Returns rpm path for initial installation
-    return " update-test-trivial/update-test-$q-$vr.$arch.rpm";
+    # Returns rpm absolute path for initial installation
+    my $pwd = script_output("pwd");
+    return " ${pwd}/update-test-trivial/update-test-$q-$vr.$arch.rpm";
 }
 
 # Optionally skip exit status check in case immediate reboot is expected
