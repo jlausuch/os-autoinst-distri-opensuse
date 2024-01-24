@@ -7,14 +7,19 @@
 # Summary: Test kubeadm to bootstrap single node k8s cluster. Intended for use in Kubic (only place where k8s is supported)
 # Maintainer: Panagiotis Georgiadis <pgeorgiadis@suse.com>, Richard Brown <rbrown@suse.com>
 
-use strict;
-use warnings;
-use base "consoletest";
+use Mojo::Base 'consoletest';
+use serial_terminal 'select_serial_terminal';
 use testapi;
-use utils "systemctl";
+use utils;
 
 sub run {
-    select_console("root-console");
+    my ($self, $run_args) = @_;
+    select_serial_terminal;
+
+    record_info 'Test #0', 'Test: Package Installation';
+    my $version = $run_args->{version};
+    record_info 'VESRION', $version;
+    zypper_call("in kubernetes$version-kubeadm kubernetes$version-client");
 
     record_info 'Test #1', 'Test: Initialize kubeadm';
     assert_script_run("kubeadm init --v=5 --cri-socket=/var/run/crio/crio.sock --pod-network-cidr=10.244.0.0/16 --kubernetes-version=\$(kubelet --version|sed -e 's/Kubernetes v//g') | tee /dev/$serialdev", 300);

@@ -197,6 +197,21 @@ sub load_image_tests_in_openshift {
     loadtest 'containers/openshift_image';
 }
 
+sub load_kubeadm_tests {
+    my ($run_args) = @_;
+    if (my $versions = get_var('KUBEADM_VERSIONS')) {
+        foreach (split(',\s*', $versions)) {
+            #push @{$run_args->{version}}, $_;
+            $run_args->{version} = $_;
+            loadtest('containers/kubeadm', run_args => $run_args, name => 'kubeadm_' . $run_args->{version});
+            #loadtest('containers/kubeadm', run_args => $run_args, name => 'kubeadm_' . $version);
+        }
+    }
+    else {
+        loadtest('containers/kubeadm');
+    }
+}
+
 sub update_host_and_publish_hdd {
     # Method used to update pre-installed host images, booting
     # the existing qcow2 and publish a new qcow2
@@ -290,6 +305,7 @@ sub load_container_tests {
             load_host_tests_containerd_crictl() if (/containerd_crictl/i);
             load_host_tests_containerd_nerdctl() if (/containerd_nerdctl/i);
             loadtest('containers/kubectl') if (/kubectl/i);
+            load_kubeadm_tests($run_args) if (/kubeadm/i);
             load_host_tests_helm($run_args) if (/helm/i);
             loadtest 'containers/apptainer' if (/apptainer/i);
         }
