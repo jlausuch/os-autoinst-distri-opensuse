@@ -79,7 +79,7 @@ sub load_boot_from_disk_tests {
 }
 
 sub load_boot_from_dvd_tests {
-    if (is_s390x) {
+    if (is_s390x || is_ppc64le) {
         loadtest 'installation/bootloader_start';
     } elsif (get_var('UEFI')) {
         loadtest 'installation/bootloader_uefi';
@@ -132,6 +132,9 @@ sub load_installation_tests {
     if (is_s390x) {
         loadtest 'boot/reconnect_mgmt_console';
         loadtest 'installation/first_boot';
+    } elsif (is_ppc64le) {
+        loadtest 'microos/disk_boot';
+        loadtest 'console/system_prepare';
     } else {
         loadtest 'microos/disk_boot';
     }
