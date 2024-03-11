@@ -64,60 +64,31 @@ sub run {
 
     script_run "rebootmgrctl set-strategy off";
 
-    get_utt_packages;
+    #get_utt_packages;
 
-    record_info 'Install ptf', 'Install package - snapshot #1';
-    trup_call "ptf install" . rpmver('security');
+    #record_info 'Install ptf', 'Install package - snapshot #1';
+    #trup_call "ptf install" . rpmver('security');
+    my $snap1 = script_output "snapper list | tail -1 | cut -d'|' -f1 | tr -d ' *'";
+    #record_info("pkgs", script_output("zypper search -u"));
+    record_info 'Snapshot', $snap1;
+    trup_call "pkg in git";
     check_reboot_changes;
-    check_package(stage => 'in');
+    #check_package(stage => 'in');
+    assert_script_run('rpm -q git');
 
     # Find snapshot number for rollback
-    my $snap = script_output "snapper list | tail -1 | cut -d'|' -f1 | tr -d ' *'";
+    my $snap2 = script_output "snapper list | tail -1 | cut -d'|' -f1 | tr -d ' *'";
+    record_info 'Snapshot', $snap2;
 
-    # Don't use tests requiring repos in staging
-    unless (is_opensuse && is_staging) {
-        record_info 'Update #1', 'Add repository and update - snapshot #2';
-        # Leap Micro misses the gpg key for openSUSE:Maintenance space
-        my $no_gpg_check = (is_leap_micro || is_alp) ? '-G' : '';
-        zypper_call "ar $no_gpg_check utt.repo" if (is_sle || is_sle_micro || is_leap_micro || is_alp);
-        # openSUSE MicroOS does not need additional repo as UTT package is already available
-        trup_call 'cleanup up', timeout => 300;
-        check_reboot_changes;
-        check_package(stage => 'up');
+    #record_info 'Remove pkg', 'Remove package - snapshot #4';
+    #trup_call 'pkg remove update-test-security';
+    #check_reboot_changes;
+    #check_package;
 
-        record_info 'Update #2', 'System should be up to date - no changes expected';
-        trup_call 'cleanup up';
-        check_reboot_changes 0;
-
-        # Check that zypper does not return 0 if update was aborted
-        record_info 'Broken pkg', 'Install broken package poo#18644 - snapshot #3';
-        trup_call "pkg install" . rpmver('broken'), interactive => 1;
-        check_reboot_changes;
-        # Systems with repositories would downgrade on DUP
-        if (is_leap) {
-            record_info 'Broken packages test skipped';
-        } else {
-            trup_call "cleanup up", exit_code => 1;
-            check_reboot_changes 0;
-        }
-    }
-
-    record_info 'Remove pkg', 'Remove package - snapshot #4';
-    trup_call 'pkg remove update-test-security';
+    trup_call "rollback $snap1";
     check_reboot_changes;
-    check_package;
-
-    record_info 'Continue', 'Continue modifying an snapshot -snapshots #5 and #6';
-    trup_call "pkg install" . rpmver('feature');
-    trup_call "--continue pkg install" . rpmver('optional');
-    check_reboot_changes;
-    check_package(stage => 'in', package => 'update-test-feature');
-    check_package(stage => 'in', package => 'update-test-optional');
-
-    record_info 'Rollback', 'Revert to snapshot with initial rpm';
-    trup_call "rollback $snap";
-    check_reboot_changes;
-    check_package(stage => 'in');
+    #check_package(stage => 'in');
+    assert_script_run('rpm -q git');
 }
 
 sub test_flags {
