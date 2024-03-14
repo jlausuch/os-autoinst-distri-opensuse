@@ -95,6 +95,10 @@ sub run {
         install_fips;
         $self->enable_fips;
     }
+    zypper_call("ref");
+    $self->reboot_and_select_serial_term;
+    zypper_call("ref");
+    zypper_call("up");
 }
 
 sub test_flags {
