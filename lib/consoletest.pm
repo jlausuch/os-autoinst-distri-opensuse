@@ -35,7 +35,7 @@ sub post_run_hook {
     # start next test in home directory
     enter_cmd "cd";
 
-    record_avc_selinux_alerts();
+    #record_avc_selinux_alerts();
     # clear screen to make screen content ready for next test
     $self->clear_and_verify_console;
 }
