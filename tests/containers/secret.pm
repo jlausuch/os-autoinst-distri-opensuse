@@ -19,6 +19,7 @@ use version_utils;
 sub run {
     my ($self, $args) = @_;
     my $output = '';
+    sleep;
 
     my $engine = $self->containers_factory('podman');
 
