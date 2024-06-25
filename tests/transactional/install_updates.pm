@@ -46,15 +46,15 @@ sub run {
         assert_script_run('rm /tmp/journal_before');
     }
 
-    # First we update the system
-    fully_patch_system(trup_call_timeout => 1800);
+    # First we update the system with the regular Update channels
+    my $ret = trup_call('up', timeout => 300, proceed_on_failure => 1);
+    soft_fail_rt_scriptlet if ($ret != 0);
+    process_reboot(trigger => 1);
 
     # Now we add the incident repositories and do a zypper patch
     add_test_repositories;
     record_info('Updates', script_output('zypper lu'));
-    my $ret = trup_call('up', timeout => 300, proceed_on_failure => 1);
-    soft_fail_rt_scriptlet if ($ret != 0);
-    process_reboot(trigger => 1);
+    fully_patch_system(trup_call_timeout => 1800);
 }
 
 sub test_flags {
