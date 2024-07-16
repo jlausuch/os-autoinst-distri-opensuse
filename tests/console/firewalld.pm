@@ -77,7 +77,9 @@ sub start_stop_firewalld {
     if (uses_iptables) {
         script_retry('iptables -L IN_public_allow');
     } else {
+        record_info('journal', script_output('journalctl --no-pager --quiet -p err -o short-precise'));
         script_retry('nft list chain inet firewalld filter_IN_public_allow');
+        record_info('journal', script_output('journalctl --no-pager --quiet -p err -o short-precise'));
     }
 }
 
