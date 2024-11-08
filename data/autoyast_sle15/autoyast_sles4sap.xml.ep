@@ -207,7 +207,12 @@
       <type config:type="symbol">CT_LVM</type>
     </drive>
     <drive>
+    % if ($check_var->('BACKEND', 'pvm_hmc')) {
+      <device>/dev/sda</device>
+    % }
+    % unless ($check_var->('BACKEND', 'pvm_hmc')) {
       <device>/dev/vda</device>
+    % }
       <disklabel>gpt</disklabel>
       <enable_snapshots config:type="boolean">true</enable_snapshots>
       <initialize config:type="boolean">true</initialize>
@@ -264,7 +269,12 @@
       <use>all</use>
     </drive>
     <drive>
+    % if ($check_var->('BACKEND', 'pvm_hmc')) {
+      <device>/dev/sdb</device>
+    % }
+    % unless ($check_var->('BACKEND', 'pvm_hmc')) {
       <device>/dev/vdb</device>
+    % }
       <disklabel>gpt</disklabel>
       <initialize config:type="boolean">true</initialize>
       <partitions config:type="list">

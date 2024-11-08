@@ -149,7 +149,9 @@
   </suse_register>
   <software>
     <patterns config:type="list">
+    % unless ($check_var->('BACKEND', 'pvm_hmc')) {
       <pattern>gnome_basis</pattern>
+    % }
       <pattern>base</pattern>
       <pattern>enhanced_base</pattern>
       <pattern>apparmor</pattern>
@@ -209,8 +211,7 @@
     <drive>
     % if ($check_var->('BACKEND', 'pvm_hmc')) {
       <device>/dev/sda</device>
-    % }
-    % unless ($check_var->('BACKEND', 'pvm_hmc')) {
+    % } else {
       <device>/dev/vda</device>
     % }
       <disklabel>gpt</disklabel>
@@ -271,8 +272,7 @@
     <drive>
     % if ($check_var->('BACKEND', 'pvm_hmc')) {
       <device>/dev/sdb</device>
-    % }
-    % unless ($check_var->('BACKEND', 'pvm_hmc')) {
+    % } else {
       <device>/dev/vdb</device>
     % }
       <disklabel>gpt</disklabel>
