@@ -46,6 +46,11 @@ sub prepare_system_for_ase {
 
     # wget is currently not in the default install of SLE16.
     zypper_call("in wget") if (is_sle('16+'));
+
+    zypper_call("ar -G http://updates.suse.de/SUSE/Updates/SLE-Module-Basesystem/15-SP6/x86_64/update/SUSE:Updates:SLE-Module-Basesystem:15-SP6:x86_64.repo");
+    zypper_call("ref");
+    record_info("REPOS", script_output("zypper lr -u"));
+    zypper_call("in libnsl1");
 }
 
 =head2 download_ase_assets
