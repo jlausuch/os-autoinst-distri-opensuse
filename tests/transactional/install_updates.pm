@@ -37,6 +37,11 @@ sub run {
         assert_script_run 'update-ca-certificates -v';
     }
 
+    record_info('Updates', script_output('zypper lu'));
+    record_info('LOCKS');
+    #assert_script_run 'zypper addlock shim dracut dracut-transactional-update';
+    #assert_script_run 'zypper addlock shim dracut dracut-kiwi-lib dracut-kiwi-oem-dump dracut-kiwi-oem-repart dracut-transactional-update grub2 grub2-i386-pc grub2-snapper-plugin grub2-x86_64-efi cockpit-selinux container-selinux libselinux1 patterns-base-selinux python3-selinux selinux-policy selinux-policy-targeted selinux-tools swtpm-selinux kernel-default libbd_crypto2 python311-M2Crypto python311-cryptography coreutils-systemd util-linux-systemd libsystemd0 systemd systemd-container systemd-coredump util-linux-systemd pam pam-config pam_pwquality pam_u2f';
+    assert_script_run 'zypper addlock dracut pam pam-config';
     update_system;
 
     # Clean the journal to avoid capturing bugs that are fixed after installing updates
@@ -47,8 +52,7 @@ sub run {
     script_run("rm -f $journal_before");
 
     # Now we add the test repositories and do a system update
-    add_test_repositories;
-    record_info('Updates', script_output('zypper lu'));
+    #add_test_repositories;
     update_system unless get_var('DISABLE_UPDATE_WITH_PATCH');
 
     # after update, clean the audit log to make sure there aren't any leftovers that were already fixed
