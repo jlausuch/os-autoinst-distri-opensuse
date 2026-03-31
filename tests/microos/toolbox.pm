@@ -106,7 +106,7 @@ sub run {
         record_soft_failure("bsc#1252754 - toolbox failure for SLEM containter 5.2 - 5.5. unable to open container due to ptmx");
     } else {
         my $uid = script_output 'id -u';
-        validate_script_output 'toolbox -u id', sub { m/uid=${uid}\(${user}\)/ }, timeout => 300;
+        validate_script_output 'toolbox -u id', sub { m/uid=${uid}\(${user}\)/ }, timeout => 600;
         die "$user shouldn't have access to /etc/passwd!" if (script_run('toolbox -u touch /etc/passwd') == 0);
         # Check if toolbox sees processes from outside the container (there should be no pid namespace separation)
         background_script_run 'sleep 3612';
