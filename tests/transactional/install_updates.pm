@@ -49,11 +49,7 @@ sub run {
     # Now we add the test repositories and do a system update
     add_test_repositories;
     record_info('Updates', script_output('zypper lu'));
-    #update_system unless get_var('DISABLE_UPDATE_WITH_PATCH');
-    record_info('before', script_output('rpm -qi s390-tools'));
-    trup_call('pkg up s390-tools s390-tools-genprotimg-data', timeout => 1800);
-    process_reboot(trigger => 1);
-    record_info('after', script_output('rpm -qi s390-tools'));
+    update_system unless get_var('DISABLE_UPDATE_WITH_PATCH');
 
     # after update, clean the audit log to make sure there aren't any leftovers that were already fixed
     # see poo#169090
