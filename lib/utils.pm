@@ -880,7 +880,11 @@ sub fully_patch_system {
         # poo#115454
         my $zypp_opt = check_var('VIRSH_VMM_FAMILY', 'hyperv') ? '-q' : '';
         for (1 .. 3) {
-            $ret = zypper_call("$zypp_opt patch --with-interactive -l", exitcode => [0, 4, 102, 103], timeout => 6000);
+            record_info("JOSE", "Installing s390-tools only");
+            record_info("before", script_output('rpm -qi s390-tools'));
+            $ret = zypper_call("in kernel-default");
+            record_info("after", script_output('rpm -qi s390-tools'));
+            #$ret = zypper_call("$zypp_opt patch --with-interactive -l", exitcode => [0, 4, 102, 103], timeout => 6000);
             last if $ret != 103;
         }
     }
