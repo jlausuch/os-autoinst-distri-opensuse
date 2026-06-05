@@ -1105,7 +1105,7 @@ sub runtime_registration {
     # add modules
     register_addons_cmd($scc_addons, $retries) if $scc_addons;
     # Check that repos actually work
-    zypper_call 'refresh';
+    zypper_call '--no-gpg-checks refresh';
     zypper_call 'repos --details';
 }
 
