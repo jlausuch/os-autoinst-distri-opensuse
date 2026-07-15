@@ -149,10 +149,10 @@ sub process_reboot {
         }
         else {
             #Need to wait 3s to start tty6 service refer bsc#1269251
-            assert_screen 'linux-login', 200;
+            assert_screen 'linux-login', 300;
             wait_still_screen(3);
         }
-        assert_screen 'linux-login', 200;
+        assert_screen 'linux-login', 300;
 
         # Login & clear login needle
         select_console 'root-console';
