@@ -19,6 +19,7 @@
     <ul>
       <li><a href="#Methods">Methods</a>
         <ul>
+          <li><a href="#qesap_get_paths">qesap_get_paths</a></li>
           <li><a href="#qesap_get_file_paths">qesap_get_file_paths</a></li>
           <li><a href="#qesap_create_folder_tree">qesap_create_folder_tree</a></li>
           <li><a href="#qesap_get_variables">qesap_get_variables</a></li>
@@ -30,6 +31,7 @@
           <li><a href="#qesap_pip_install">qesap_pip_install</a></li>
           <li><a href="#qesap_galaxy_install">qesap_galaxy_install</a></li>
           <li><a href="#qesap_upload_logs">qesap_upload_logs</a></li>
+          <li><a href="#qesap_get_latest_version">qesap_get_latest_version</a></li>
           <li><a href="#qesap_get_deployment_code">qesap_get_deployment_code</a></li>
           <li><a href="#qesap_get_roles_code-Get-the-Ansible-roles-code-from-github.com-sap-linuxlab-community.sles-for-sap">qesap_get_roles_code Get the Ansible roles code from github.com/sap-linuxlab/community.sles-for-sap</a></li>
           <li><a href="#qesap_yaml_replace">qesap_yaml_replace</a></li>
@@ -56,6 +58,7 @@
           <li><a href="#qesap_cluster_log_cmds">qesap_cluster_log_cmds</a></li>
           <li><a href="#qesap_cluster_logs">qesap_cluster_logs</a></li>
           <li><a href="#qesap_save_y2logs">qesap_save_y2logs</a></li>
+          <li><a href="#qesap_host_is_reachable">qesap_host_is_reachable</a></li>
           <li><a href="#qesap_supportconfig_logs">qesap_supportconfig_logs</a></li>
           <li><a href="#qesap_calculate_deployment_name">qesap_calculate_deployment_name</a></li>
           <li><a href="#qesap_aws_filter_query">qesap_aws_filter_query</a></li>
@@ -94,6 +97,12 @@ SPDX-License-Identifier: FSFAP</code></pre>
 <pre><code>Package with common methods and default or constant values for qe-sap-deployment</code></pre>
 
 <h2 id="Methods">Methods</h2>
+
+<h3 id="qesap_get_paths">qesap_get_paths</h3>
+
+<pre><code>Returns a hash containing directory paths for qe-sap-deployment:
+deployment_dir, terraform_dir, roles_dir, roles_dir_path.
+Unlike qesap_get_file_paths(), this does not require QESAP_CONFIG_FILE.</code></pre>
 
 <h3 id="qesap_get_file_paths">qesap_get_file_paths</h3>
 
@@ -203,9 +212,22 @@ This is about logs generated locally on the jumphost.</code></pre>
 </dd>
 </dl>
 
+<h3 id="qesap_get_latest_version">qesap_get_latest_version</h3>
+
+<pre><code>Queries GitHub for the latest release tag of qe-sap-deployment
+and returns the parsed version string.</code></pre>
+
 <h3 id="qesap_get_deployment_code">qesap_get_deployment_code</h3>
 
 <pre><code>Get the qe-sap-deployment code</code></pre>
+
+<dl>
+
+<dt id="VERSION---optional-release-version-tag-to-install-e.g.-latest-2.6.15"><b>VERSION</b> - optional release version tag to install (e.g. &#39;latest&#39;, &#39;2.6.15&#39;)</dt>
+<dd>
+
+</dd>
+</dl>
 
 <h3 id="qesap_get_roles_code-Get-the-Ansible-roles-code-from-github.com-sap-linuxlab-community.sles-for-sap">qesap_get_roles_code Get the Ansible roles code from github.com/sap-linuxlab/community.sles-for-sap</h3>
 
@@ -779,6 +801,42 @@ This is about logs generated remotely on the two HANA nodes,
 </dd>
 </dl>
 
+<h3 id="qesap_host_is_reachable">qesap_host_is_reachable</h3>
+
+<pre><code>qesap_host_is_reachable(provider =&gt; &#39;aws&#39;, host =&gt; &#39;hana[0]&#39;);</code></pre>
+
+<p>Quick reachability probe for a single inventory host via Ansible ping.</p>
+
+<p>Dies if mandatory arguments are missing. Returns 1 if host answers Ansible ping within timeout, 0 otherwise.</p>
+
+<dl>
+
+<dt id="provider---cloud-provider-same-format-as-PUBLIC_CLOUD_PROVIDER"><b>provider</b> - cloud provider, same format as PUBLIC_CLOUD_PROVIDER</dt>
+<dd>
+
+</dd>
+<dt id="host---host-in-the-inventory"><b>host</b> - host in the inventory</dt>
+<dd>
+
+</dd>
+<dt id="user---user-on-remote-host-default-to-cloudadmin"><b>user</b> - user on remote host, default to &#39;cloudadmin&#39;</dt>
+<dd>
+
+</dd>
+<dt id="inventory---optional-ansible-inventory-file-path"><b>inventory</b> - optional, ansible inventory file path</dt>
+<dd>
+
+</dd>
+<dt id="timeout---optional-default-60s-scaled"><b>timeout</b> - optional, default 60s (scaled)</dt>
+<dd>
+
+</dd>
+<dt id="retry---optional-default-2"><b>retry</b> - optional, default 2</dt>
+<dd>
+
+</dd>
+</dl>
+
 <h3 id="qesap_supportconfig_logs">qesap_supportconfig_logs</h3>
 
 <pre><code>Collect supportconfig logs from all HANA nodes of a deployed cluster</code></pre>
@@ -851,7 +909,7 @@ qesap_export_instances()</code></pre>
 <h3 id="qesap_aws_delete_leftover_tgw_attachments">qesap_aws_delete_leftover_tgw_attachments</h3>
 
 <pre><code>Delete leftover peering resources for AWS jobs that finished without cleaning up.
-This only works for resources created by jobs that run on the same openqa server 
+This only works for resources created by jobs that run on the same openqa server
 that the current job is running on.</code></pre>
 
 <dl>
