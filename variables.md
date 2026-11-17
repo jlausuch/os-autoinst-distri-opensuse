@@ -17,6 +17,7 @@ For a better overview some domain-specific values have been moved to their own s
 
 Variable        | Type      | Default value | Details
 ---             | ---       | ---           | ---
+AGNOSTIC_CONTAINER | string | | Container image with the test frameworks for openQA-agnostic tests (`lib/agnosticTestRunner.pm`). If set, the runtest executes in this privileged container with access to the host namespaces and the host root at `/host`, and no test dependencies are installed on the SUT. The runtime is the first entry of `CONTAINER_RUNTIMES` (default `podman`, also `docker`) and is installed if it is not available.
 APACHE2_PKG | string | apache | Apache2 package under test (e.g. `apache2` or `apache2-tls13`)
 AARCH64_MTE_SUPPORTED | boolean | false     | Set to 1 if your machine supports Memory Tagging Extension (MTE)
 ADDONS          | string    |               | Comma separated list of addons to be added using DVD. Also used to indicate addons in the SUT.

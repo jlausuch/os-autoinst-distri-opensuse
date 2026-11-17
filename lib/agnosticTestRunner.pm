@@ -9,18 +9,34 @@
 # The 'shell' language expects a self-contained runtest emitting TAP and
 # installs no test framework, so it also works on minimal images.
 #
+# If AGNOSTIC_CONTAINER is set, the runner installs no test dependencies on
+# the SUT. It installs only the container runtime, if it is not available.
+# The runtest executes in that container image, which must contain the
+# test framework (go and gotestsum, a JDK) and nsenter. If the image has no
+# pytest, the runner installs it in a local copy of the image. The
+# container is privileged, uses the host PID, network, IPC, UTS and cgroup
+# namespaces and gets the host root file system at /host. HOST_ROOT=/host
+# is set in the container. The host is the system under test, thus
+# lib/agnostic_container.sh starts the runtest: it shows the host state
+# directories (for example /etc, /root, /tmp) in the container and runs
+# host commands in the host namespaces. Tests need no changes. For special
+# cases, the on_host helper (lib/helper.sh) and lib/agnostic_host.py are
+# available. CONTAINER_RUNTIMES selects the runtime (first entry, default
+# podman).
+#
 # Maintainer: QE Core <qe-core@suse.de>
 
 package agnosticTestRunner;
 
 use strict;
 use warnings;
-use testapi qw(assert_script_run script_run data_url parse_extra_log script_output upload_logs record_info);
+use testapi qw(assert_script_run script_run data_url parse_extra_log script_output upload_logs record_info get_var);
 use Mojo::DOM;
 use registration 'add_suseconnect_product', 'get_addon_fullname';
 use package_utils 'install_package';
 use utils 'zypper_call';
 use version_utils 'is_sle';
+use containers::common qw(install_podman_when_needed install_docker_when_needed);
 
 sub new {
     my ($class, $args) = @_;
@@ -38,9 +54,14 @@ sub new {
     $args->{result_file} //= '/tmp/' . lc($args->{name}) . ($is_tap ? '_results.tap' : '_results.xml');
     $args->{data_url_path} //= $args->{domain} . '/openqa_agnostic/' . $args->{language} . '/' . $args->{name};
     $args->{helper_path} //= 'openqa_agnostic/lib/helper.sh';
+    $args->{host_helper_path} //= 'openqa_agnostic/lib/agnostic_host.py';
+    $args->{container_entry_path} //= 'openqa_agnostic/lib/agnostic_container.sh';
     $args->{run_command} //= 'runtest';
     $args->{run_timeout} //= 90;
     $args->{skip_phub} //= 0;
+    $args->{container_image} //= get_var('AGNOSTIC_CONTAINER');
+    $args->{container_runtime} //= (split(/\s*,\s*/, get_var('CONTAINER_RUNTIMES', '')))[0] || 'podman';
+    $args->{pull_timeout} //= 600;
     return bless $args, $class;
 }
 
@@ -83,12 +104,56 @@ sub _install_python_deps {
     }
 }
 
+sub _setup_container {
+    my ($self) = @_;
+    my $runtime = $self->{container_runtime};
+    my $image = $self->{container_image};
+    if ($runtime eq 'podman') {
+        install_podman_when_needed();
+    } elsif ($runtime eq 'docker') {
+        install_docker_when_needed();
+    } else {
+        die "Unsupported container runtime '$runtime'. Supported: podman, docker";
+    }
+    record_info('container', "Run $self->{name} in $image with $runtime");
+    assert_script_run("$runtime pull $image", timeout => $self->{pull_timeout});
+    $self->_container_install_pytest() if $self->{language} eq 'python';
+}
+
+# Install pytest in the container image if it is not available, for example
+# in registry.suse.com/bci/python. Install it one time in a temporary
+# container and commit the result to a local image, which all agnostic tests
+# of the job then use. Use python3XY-pytest from the repositories and pip as
+# fallback.
+sub _container_install_pytest {
+    my ($self) = @_;
+    my $runtime = $self->{container_runtime};
+    my $local_image = 'localhost/agnostic-pytest:latest';
+    my $setup_name = 'agnostic-pytest-setup';
+
+    if (script_run("$runtime image inspect $local_image > /dev/null 2>&1", quiet => 1) == 0) {
+        $self->{container_image} = $local_image;
+        return;
+    }
+    return if script_run("$runtime run --rm $self->{container_image} python3 -m pytest --version", timeout => 60) == 0;
+
+    my $install = 'zypper -n in python$(python3 -c "import sys; print(sys.version_info[0] * 100 + sys.version_info[1])")-pytest'
+      . ' || pip3 install pytest';
+    script_run("$runtime rm -f $setup_name", quiet => 1);
+    assert_script_run("$runtime run --name $setup_name $self->{container_image} sh -c '$install'", timeout => 300);
+    assert_script_run("$runtime commit $setup_name $local_image && $runtime rm $setup_name", timeout => 120);
+    $self->{container_image} = $local_image;
+}
+
 sub setup {
     my ($self) = @_;
     my $url = data_url($self->{data_url_path});
 
-    # The shell language brings its own tooling, so nothing is installed.
-    if ($self->{language} ne 'shell') {
+    # In container mode the image brings the tooling and the shell language
+    # brings its own tooling, so no test framework is installed.
+    if ($self->{container_image}) {
+        $self->_setup_container();
+    } elsif ($self->{language} ne 'shell') {
         if ($self->{language} eq 'python') {
             # Version check before PackageHub to avoid wasting 30-60s
             my $minor = _python_version();
@@ -118,6 +183,12 @@ sub setup {
     assert_script_run("mkdir -p $test_dir/../lib", quiet => 1);
     my $helper_url = data_url($self->{helper_path});
     assert_script_run("curl -s -o $test_dir/../lib/helper.sh $helper_url", quiet => 1);
+    my $host_helper_url = data_url($self->{host_helper_path});
+    assert_script_run("curl -s -o $test_dir/../lib/agnostic_host.py $host_helper_url", quiet => 1);
+    if ($self->{container_image}) {
+        my $entry_url = data_url($self->{container_entry_path});
+        assert_script_run("curl -s -o $test_dir/../lib/agnostic_container.sh $entry_url", quiet => 1);
+    }
 
     # Download and discover test files via runtest -f
     my $run_script = $self->{run_command};
@@ -134,6 +205,19 @@ sub setup {
     return $self;
 }
 
+# Return the prefix that runs the runtest in the container. The host root
+# is at /host. lib/agnostic_container.sh prepares the container and starts
+# the runtest in the test directory of the host, thus the runtest writes
+# results.* directly to the host.
+sub _container_prefix {
+    my ($self, $env) = @_;
+    my @cmd = ($self->{container_runtime}, 'run --rm --privileged',
+        '--pid=host --network=host --ipc=host --uts=host --cgroupns=host',
+        '-v /:/host -e HOST_ROOT=/host -w "/host$PWD"');
+    push @cmd, "-e $env" if $env;
+    return join(' ', @cmd, $self->{container_image}, 'bash ../lib/agnostic_container.sh "$PWD"', '');
+}
+
 sub run_test {
     my ($self) = @_;
     return $self if $self->{skipped};
@@ -145,9 +229,11 @@ sub run_test {
     # openQA identifies XUnit results by the testsuite name. The default
     # pytest name is 'pytest', thus two agnostic tests in one job collide and
     # one of them can stay without a result. Set a unique name for each test.
-    my $env = $self->{language} eq 'python' ? "PYTEST_ADDOPTS='-o junit_suite_name=${name}_pytest' " : '';
+    my $env = $self->{language} eq 'python' ? "PYTEST_ADDOPTS='-o junit_suite_name=${name}_pytest'" : '';
+    my $exec = $self->{container_image} ? $self->_container_prefix($env) . $run_script
+      : ($env ? "$env " : '') . $run_script;
     my $command = 'cd ' . $self->{test_dir} . ' && chmod +x ' . $run_script
-      . ' && ( set -o pipefail; ' . $env . $run_script . " 2>&1 | tee $output_log )"
+      . ' && ( set -o pipefail; ' . $exec . " 2>&1 | tee $output_log )"
       . ' && mv ' . $result_src . ' ' . $self->{result_file};
     assert_script_run($command, timeout => $self->{run_timeout}, quiet => 1);
     upload_logs($output_log, failok => 1);

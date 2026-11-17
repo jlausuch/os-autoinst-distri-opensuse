@@ -67,3 +67,26 @@ ensure_command_available() {
         exit 1
     fi
 }
+
+# Run a command on the host, which is the system under test.
+# In container mode (HOST_ROOT is set), enter the namespaces of the host
+# init process. Otherwise the command runs as is, because the runtest
+# already runs on the host.
+#
+# Usage:
+#   on_host useradd -m testuser
+on_host() {
+    if [[ -n "$HOST_ROOT" ]]; then
+        nsenter -t 1 -m -u -i -n -p -- "$@"
+    else
+        "$@"
+    fi
+}
+
+# Print the path of a host file as the runtest sees it.
+#
+# Usage:
+#   grep wheel "$(host_path /etc/group)"
+host_path() {
+    echo "${HOST_ROOT}$1"
+}
